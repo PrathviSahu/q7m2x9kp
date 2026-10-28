@@ -4,7 +4,7 @@
  */
 import { useState, useEffect, useCallback } from 'react';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
+const API_BASE = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '');
 
 export function useWindData(dateFrom = '2026-01-01', dateTo = '2026-01-31') {
   const [data, setData] = useState(null);       // AccuracyResponse | null

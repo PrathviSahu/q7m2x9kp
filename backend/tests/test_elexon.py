@@ -41,32 +41,32 @@ class TestCutoffLogic:
 
 
 class TestSettlementMapping:
-    def test_period_1_is_2300_utc_prev_day(self):
-        """Period 1 = 23:00 UTC on the previous calendar day."""
-        sdate, period = _start_time_to_settlement("2026-01-14T23:00:00Z")
+    def test_period_1_is_0000_utc_same_day(self):
+        """Period 1 = 00:00 to 00:30 UTC on the settlement date (GMT in January)."""
+        sdate, period = _start_time_to_settlement("2026-01-15T00:00:00Z")
         assert str(sdate) == "2026-01-15"
         assert period == 1
 
-    def test_period_2_is_2330_utc(self):
-        sdate, period = _start_time_to_settlement("2026-01-14T23:30:00Z")
+    def test_period_2_is_0030_utc(self):
+        sdate, period = _start_time_to_settlement("2026-01-15T00:30:00Z")
         assert str(sdate) == "2026-01-15"
         assert period == 2
 
-    def test_period_48_is_2230_utc_same_day(self):
-        """Period 48 = 22:30 UTC on the settlement date itself."""
-        sdate, period = _start_time_to_settlement("2026-01-15T22:30:00Z")
+    def test_period_48_is_2330_utc_same_day(self):
+        """Period 48 = 23:30 to 24:00 UTC on the settlement date itself."""
+        sdate, period = _start_time_to_settlement("2026-01-15T23:30:00Z")
         assert str(sdate) == "2026-01-15"
         assert period == 48
 
     def test_midday_period(self):
-        """12:00 UTC = period 27 (12:00-12:30 UTC)."""
+        """12:00 UTC = period 25 (12:00-12:30 UTC)."""
         sdate, period = _start_time_to_settlement("2026-01-15T12:00:00Z")
         assert str(sdate) == "2026-01-15"
-        assert period == 27
+        assert period == 25
 
-    def test_new_year_boundary(self):
-        """Period 1 of Jan 1 starts at 23:00 UTC Dec 31."""
-        sdate, period = _start_time_to_settlement("2025-12-31T23:00:00Z")
+    def test_new_year_first_period(self):
+        """Period 1 of Jan 1 starts at 00:00 UTC Jan 1."""
+        sdate, period = _start_time_to_settlement("2026-01-01T00:00:00Z")
         assert str(sdate) == "2026-01-01"
         assert period == 1
 

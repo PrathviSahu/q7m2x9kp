@@ -108,10 +108,32 @@ class TestComputeMetrics:
         assert metrics["overall"]["rmse_mw"] == pytest.approx(100.0)
 
     def test_bias_positive(self):
-        # systematic over-forecast
+        # systematic over-forecast: forecast > actual
         joined = self._make_joined([(1000, 1200), (1000, 1200)])
         metrics = compute_metrics(joined)
         assert metrics["overall"]["bias_mw"] == pytest.approx(200.0)
+        assert metrics["overall"]["mae_mw"] == pytest.approx(200.0)
+
+    def test_bias_negative_under_forecast(self):
+        # systematic under-forecast: forecast < actual (e.g. actual=1000, forecast=800)
+        joined = self._make_joined([(1000, 800), (1000, 700)])
+        metrics = compute_metrics(joined)
+        # errors are -200 and -300
+        # Bias should be -250 MW (signed)
+        # MAE should be +250 MW (absolute)
+        assert metrics["overall"]["bias_mw"] == pytest.approx(-250.0)
+        assert metrics["overall"]["mae_mw"] == pytest.approx(250.0)
+        assert metrics["overall"]["bias_mw"] != metrics["overall"]["mae_mw"]
+
+    def test_bias_distinct_from_mae_in_mixed_scenario(self):
+        # Mixed: error1 = +500 MW, error2 = -100 MW
+        # MAE = (|500| + |-100|) / 2 = 300 MW
+        # Bias = (500 + -100) / 2 = +200 MW
+        joined = self._make_joined([(1000, 1500), (1000, 900)])
+        metrics = compute_metrics(joined)
+        assert metrics["overall"]["mae_mw"] == pytest.approx(300.0)
+        assert metrics["overall"]["bias_mw"] == pytest.approx(200.0)
+        assert metrics["overall"]["mae_mw"] != metrics["overall"]["bias_mw"]
 
     def test_bias_zero(self):
         joined = self._make_joined([(1000, 1100), (1000, 900)])

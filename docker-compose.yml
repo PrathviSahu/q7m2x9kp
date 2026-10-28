@@ -7,7 +7,7 @@ services:
       - ELEXON_BASE_URL=https://data.elexon.co.uk/bmrs/api/v1
       - CORS_ORIGINS=http://localhost:3000,http://localhost:5173
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -19,4 +19,3 @@ services:
     depends_on:
       backend:
         condition: service_healthy
-

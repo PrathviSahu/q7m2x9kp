@@ -46,17 +46,16 @@ def _start_time_to_settlement(start_time: str) -> tuple[date, int]:
     """
     Convert WINDFOR/FUELHH startTime (UTC ISO string) to (settlementDate, period).
 
-    GB electricity settlement day begins at 23:00 UTC (period 1 = 23:00–23:30 UTC
-    of the *previous* calendar day). Period 48 = 22:30–23:00 UTC of settlement date.
+    In January (Greenwich Mean Time / GMT, UTC+0):
+    GB settlement periods run from 00:00 to 24:00 UTC:
+    - Period 1  = 00:00 - 00:30 UTC
+    - Period 2  = 00:30 - 01:00 UTC
+    - ...
+    - Period 48 = 23:30 - 24:00 UTC
     """
     dt = datetime.fromisoformat(start_time.replace("Z", "+00:00"))
-    # Shift forward 1 hour: 23:00 UTC maps to 00:00 of the settlement date
-    adjusted = dt + timedelta(hours=1)
-    sdate = adjusted.date()
-    # Day start = 23:00 UTC of previous calendar day
-    day_start_utc = datetime(sdate.year, sdate.month, sdate.day, 0, 0, 0,
-                             tzinfo=timezone.utc) - timedelta(hours=1)
-    period = int((dt - day_start_utc).total_seconds() / 1800) + 1
+    sdate = dt.date()
+    period = (dt.hour * 60 + dt.minute) // 30 + 1
     return sdate, period
 
 
@@ -181,10 +180,21 @@ async def fetch_forecasts_day_ahead(
             periods_to_map = [period, period + 1] if (period % 2 == 1 and period < 48) else [period]
 
             for p in periods_to_map:
+                st = start_time
+                if p == period + 1:
+                    dt_st = datetime.fromisoformat(start_time.replace("Z", "+00:00"))
+                    st = (dt_st + timedelta(minutes=30)).isoformat().replace("+00:00", "Z")
+
                 key = (str(sdate), p)
                 existing = best.get(key)
                 if existing is None or pub_dt > existing["_pub_dt"]:
-                    best[key] = {**r, "_pub_dt": pub_dt, "_sdate": sdate, "_period": p}
+                    best[key] = {
+                        **r,
+                        "startTime": st,
+                        "_pub_dt": pub_dt,
+                        "_sdate": sdate,
+                        "_period": p,
+                    }
 
         results = []
         for (sdate_str, period), r in sorted(best.items()):

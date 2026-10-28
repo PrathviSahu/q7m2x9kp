@@ -13,16 +13,17 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# CORS — allow the React frontend origin
-_cors_origins = os.getenv(
-    "CORS_ORIGINS", "http://localhost:5173,http://localhost:3000"
-)
+# CORS — allow frontend origins (Vercel, local dev, or wildcard for public API)
+_cors_origins = os.getenv("CORS_ORIGINS", "*")
 allowed_origins = [o.strip() for o in _cors_origins.split(",") if o.strip()]
+if not allowed_origins:
+    allowed_origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
-    allow_methods=["GET"],
+    allow_credentials=False,
+    allow_methods=["GET", "OPTIONS"],
     allow_headers=["*"],
 )
 
