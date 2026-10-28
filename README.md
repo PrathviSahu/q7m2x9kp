@@ -2,9 +2,26 @@
 
 An interactive full-stack dashboard analysing UK wind generation forecasts vs outturn across **January 2026**, built with **React + Vite** and **Python (FastAPI)**.
 
+- **Live Dashboard (Vercel):** [https://q7m2x9kp-two.vercel.app](https://q7m2x9kp-two.vercel.app)
+- **Live Backend API (Render):** [https://wind-forecast-zhc3.onrender.com](https://wind-forecast-zhc3.onrender.com)
+- **Interactive Swagger Docs:** [https://wind-forecast-zhc3.onrender.com/docs](https://wind-forecast-zhc3.onrender.com/docs)
+- **Public GitHub Repository:** [https://github.com/PrathviSahu/q7m2x9kp](https://github.com/PrathviSahu/q7m2x9kp)
+
 Data is sourced from the official **Elexon Insights Solution (BMRS)** REST API:
 - **`FUELHH`**: Half-hourly generation outturn by fuel type (wind offshore + onshore outturn in MW).
 - **`WINDFOR`**: National Grid ESO wind generation forecasts (MW).
+
+---
+
+## Verified January 2026 Results
+
+| Metric | Value | Description |
+|---|---|---|
+| **Matched Intervals** | **1,488 / 1,488** | 100% complete coverage across all 31 days (31 × 48 half-hours) |
+| **MAE** | **2,126.12 MW** | Mean Absolute Error across all settlement intervals |
+| **RMSE** | **2,620.80 MW** | Root Mean Square Error (penalising large forecast deviations) |
+| **Signed Bias** | **+1,840.30 MW** | Net positive bias (systematic over-forecast across 1,252 periods) |
+| **MAPE** | **22.13%** | Mean Absolute Percentage Error (for intervals with actual $\ge 50$ MW) |
 
 ---
 
