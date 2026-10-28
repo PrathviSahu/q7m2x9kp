@@ -182,3 +182,15 @@ Query Parameters for `/api/wind/*`:
 ### Backend (Render or Heroku)
 - **Render**: Connect repository, set Root Directory to `backend`, Build Command: `pip install -r requirements.txt`, Start Command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`.
 - **Heroku / Container**: Build and deploy `backend/Dockerfile` with `PORT` binding.
+
+---
+
+## AI Tool Disclosure
+
+This project was developed with the assistance of **Google Antigravity** (AI coding assistant). The AI was used for:
+- Scaffolding the FastAPI backend structure and Pydantic schemas
+- Generating React component boilerplate (charts, tables, heatmap)
+- Writing and expanding the pytest and vitest test suites
+- Drafting the README and deployment configuration
+
+All data, API integration logic, settlement period mapping, day-ahead cutoff methodology, and accuracy metric calculations were designed, verified, and corrected by the developer using live Elexon API data.
